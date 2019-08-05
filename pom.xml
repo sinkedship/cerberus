@@ -21,6 +21,7 @@
         <module>cerberus-registry</module>
         <module>cerberus-service-bootstrap</module>
         <module>cerberus-service-client</module>
+        <module>cerberus-sample-raw</module>
     </modules>
 
     <inceptionYear>2017</inceptionYear>
