@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>cerberus-root</artifactId>
+        <groupId>com.sinkedship.cerberus</groupId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>cerberus-service-bootstrap</artifactId>
+    <packaging>jar</packaging>
+
+    <description>
+        Provides functionality that boots all the thrift services and register themselves to data center.
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.sinkedship.cerberus</groupId>
+            <artifactId>cerberus-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sinkedship.cerberus</groupId>
+            <artifactId>cerberus-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.sinkedship.cerberus</groupId>
+            <artifactId>cerberus-registry</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.airlift.drift</groupId>
+            <artifactId>drift-server</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.airlift.drift</groupId>
+            <artifactId>drift-transport-netty</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
