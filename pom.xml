@@ -20,6 +20,7 @@
         <module>cerberus-core</module>
         <module>cerberus-registry</module>
         <module>cerberus-service-bootstrap</module>
+        <module>cerberus-service-client</module>
     </modules>
 
     <inceptionYear>2017</inceptionYear>
