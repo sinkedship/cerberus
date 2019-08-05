@@ -17,6 +17,7 @@
 
     <modules>
         <module>cerberus-commons</module>
+        <module>cerberus-core</module>
     </modules>
 
     <inceptionYear>2017</inceptionYear>
