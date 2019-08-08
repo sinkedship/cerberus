@@ -12,10 +12,8 @@ import java.util.Map;
  * finding all the services {@link Discoverer#findAll()},
  * finding all the service by name {@link Discoverer#findAllByName(String)}, etc.
  *
- * <p>
  * A service {@link Discoverer} only takes the responsibility of finding all the services
  * in data center. Providing a service to a customer is the job of service {@link Provider}.
- * </p>
  *
  * @author Derrick Guan
  */

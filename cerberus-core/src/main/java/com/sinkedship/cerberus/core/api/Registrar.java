@@ -17,10 +17,8 @@ public interface Registrar {
      * Register a service to a particular data center.
      *
      * @param service which needs to be registered.
-     *
+     * @param <S> type derive from {@link Service}
      * @return {@code true} means registering the service to data center successfully, {@code false} otherwise.
-     *
-     * @see com.sinkedship.cerberus.core.api.Registrar#register(Service, long)
      */
     <S extends Service> boolean register(S service);
 
@@ -29,6 +27,7 @@ public interface Registrar {
      *
      * @param service which needs to be registered.
      * @param timeout the maximum time to try registering in milliseconds.
+     * @param <S> type derive from {@link Service}
      *
      * @return {@code true} means registering the service to data center successfully;
      *         {@code false} means the failure of registering or it's completed in the dedicated {@code timeout}.
@@ -41,6 +40,7 @@ public interface Registrar {
      * Un-register a service from a particular data center.
      *
      * @param service which needs to be un-registered.
+     * @param <S> type derive from {@link Service}
      *
      * @return {@code true} means un-registering the service from data center successfully;
      *         {@code false} otherwise.

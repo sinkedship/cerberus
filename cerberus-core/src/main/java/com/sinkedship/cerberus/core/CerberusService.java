@@ -12,9 +12,7 @@ import java.util.function.Supplier;
 
 /**
  * An abstraction of a service.
- * <p>
  * Provides the basic information of it.
- * <p/>
  *
  * @author Derrick Guan
  */
