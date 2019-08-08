@@ -62,8 +62,6 @@ import java.util.concurrent.TimeUnit;
  * <li>{@code ssl.ciphers}
  * </ul>
  * </pre>
- * <p/>
- * <p>
  * However, there are some configs have been hidden for now due to concise implementation consideration:
  * <ul>
  * <li>{@code max-frame-size} Default {@code 16MB}
