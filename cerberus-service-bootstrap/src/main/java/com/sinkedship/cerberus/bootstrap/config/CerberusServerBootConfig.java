@@ -11,64 +11,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Export available configurations from {@link DriftNettyServerConfig} and extra configuration.
- *
- * <p>
- * All available configurations are listed below:
- * <pre>
- * <ul>
- * <li>{@code bind-host}:
- *          host that thrift services listen to.
- *          An available inet host will be chosen if {@code bind-host}
- *          is not specified explicitly.
- * <li>{@code bind-port}:
- *          port that thrift services listen to
- *          and which is also the port registered to the data center.
- *          An arbitrary port will be chosen if {@code port}
- *          is not specified explicitly.
- * <li>{@code accept-backlog}:
- *          the number of pending connections that the {@link java.net.ServerSocket}
- *          will queue up before the server process can actually accept them.
- *          Default {@code 1024}.
- * <li>{@code io-thread-count}:
- *          the number of threads that the underlying
- *          Netty {@link io.netty.channel.EventLoopGroup}
- *          uses to process for any I/O events.
- *          Default {@code 3}.
- * <li>{@code worker-thread-count}:
- *          the number of threads that the underlying
- *          Netty {@link io.netty.channel.EventLoopGroup} used by
- *          {@link io.netty.bootstrap.ServerBootstrap}'s childGroup which
- *          handles all the business logic events.
- *          Default {@code available processors * 2}
- * <li>{@code request-timeout}:
- *          the maximum waiting period before a thrift method call returns.
- *          Default {@code 1 minute}.
- * <li>{@code ssl.enable}:
- *          enable ssl or not.
- *          Default {@code false}.
- * <li>{@code ssl.allow-plaintext}:
- *          allow plaintext in ssl context.
- *          Default {@code true}.
- * <li>{@code ssl-context.refresh-time}:
- *          Default {@code 1 minute}.
- * <li>{@code ssl.session-cache-size}:
- *          Default {@code 10_000L}.
- * <li>{@code ssl.session-timeout}:
- *          Default {@code 1 day}.
- * <li>{@code ssl.trust-certificate}
- * <li>{@code ssl.key}
- * <li>{@code ssl.key-password}
- * <li>{@code ssl.ciphers}
- * </ul>
- * </pre>
- * However, there are some configs have been hidden for now due to concise implementation consideration:
- * <ul>
- * <li>{@code max-frame-size} Default {@code 16MB}
- * <li>{@code assume-clients-support-out-of-order-responses} Default {@code true}
- * </ul>
- * </p>
- *
  * @author Derrick Guan
  */
 public class CerberusServerBootConfig {
