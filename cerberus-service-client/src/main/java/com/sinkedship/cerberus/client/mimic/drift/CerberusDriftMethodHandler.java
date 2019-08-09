@@ -18,7 +18,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.function.Function.identity;
 
 /**
- * A completely mimic of {@link io.airlift.drift.client.DriftMethodHandler}
+ * A completely mimic of io.airlift.drift.client.DriftMethodHandler
  * excepts that it's public.
  *
  * @author Derrick Guan

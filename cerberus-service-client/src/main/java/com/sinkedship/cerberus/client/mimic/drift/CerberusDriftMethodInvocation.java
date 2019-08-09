@@ -31,7 +31,7 @@ import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A completely mimic of {@link io.airlift.drift.client.DriftMethodInvocation}
+ * A completely mimic of io.airlift.drift.client.DriftMethodInvocation
  * excepts that it's public.
  *
  * @author Derrick Guan

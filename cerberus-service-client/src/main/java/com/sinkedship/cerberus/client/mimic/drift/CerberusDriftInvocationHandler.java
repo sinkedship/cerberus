@@ -28,7 +28,7 @@ import static java.util.Arrays.asList;
 import static java.util.Objects.requireNonNull;
 
 /**
- * A completely mimic of {@link io.airlift.drift.client.DriftInvocationHandler}
+ * A completely mimic of io.airlift.drift.client.DriftInvocationHandler
  * excepts that it's public.
  *
  * @author Derrick Guan
