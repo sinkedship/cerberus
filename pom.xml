@@ -6,7 +6,7 @@
 
     <groupId>com.sinkedship.cerberus</groupId>
     <artifactId>cerberus-root</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>pom</packaging>
 
     <name>cerberus</name>
@@ -19,9 +19,10 @@
         <module>cerberus-commons</module>
         <module>cerberus-core</module>
         <module>cerberus-registry</module>
+        <module>cerberus-sample-raw</module>
         <module>cerberus-service-bootstrap</module>
         <module>cerberus-service-client</module>
-        <module>cerberus-sample-raw</module>
+        <module>cerberus-nexus-deploy-dummy</module>
     </modules>
 
     <inceptionYear>2017</inceptionYear>
@@ -46,7 +47,7 @@
         <url>https://github.com/sinkedship/cerberus/tree/master</url>
         <connection>scm:git:git@github.com:sinkedship/cerberus.git</connection>
         <developerConnection>scm:git:git@github.com:sinkedship/cerberus.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>0.1.0</tag>
     </scm>
 
     <distributionManagement>
@@ -225,11 +226,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>3.0.0-M1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>3.1.1</version>
                     <executions>
@@ -283,5 +279,27 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>oss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.sonatype.plugins</groupId>
+                            <artifactId>nexus-staging-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
