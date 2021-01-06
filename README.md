@@ -98,7 +98,7 @@ Done!
 <dependency>
     <groupId>com.sinkedship.cerberus</groupId>
     <artifactId>cerberus-service-bootstrap</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 
@@ -175,7 +175,7 @@ One more word, as we share the service interface between server and client, we d
 <dependency>
     <groupId>com.sinkedship.cerberus</groupId>
     <artifactId>cerberus-service-client</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
 </dependency>
 ```
 

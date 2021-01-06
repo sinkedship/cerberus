@@ -6,7 +6,7 @@
 
     <groupId>com.sinkedship.cerberus</groupId>
     <artifactId>cerberus-root</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <packaging>pom</packaging>
 
     <name>cerberus</name>
@@ -47,7 +47,7 @@
         <url>https://github.com/sinkedship/cerberus/tree/master</url>
         <connection>scm:git:git@github.com:sinkedship/cerberus.git</connection>
         <developerConnection>scm:git:git@github.com:sinkedship/cerberus.git</developerConnection>
-        <tag>0.1.0</tag>
+        <tag>0.2.0</tag>
     </scm>
 
     <distributionManagement>
