@@ -6,7 +6,7 @@
 
     <groupId>com.sinkedship.cerberus</groupId>
     <artifactId>cerberus-root</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>cerberus</name>
@@ -72,6 +72,7 @@
         <consul-api.version>1.4.2</consul-api.version>
         <jetcd.version>0.3.0</jetcd.version>
         <guava.version>27.1-jre</guava.version>
+        <k8s.client.version>10.0.0</k8s.client.version>
     </properties>
 
     <dependencyManagement>
@@ -183,6 +184,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${apache.commons-lang3.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.kubernetes</groupId>
+                <artifactId>client-java</artifactId>
+                <version>${k8s.client.version}</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>
