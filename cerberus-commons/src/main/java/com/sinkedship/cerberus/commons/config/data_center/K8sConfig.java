@@ -26,7 +26,7 @@ public class K8sConfig extends DataCenterConfig {
     }
 
     public K8sConfig setNamespace(String ns) {
-        Preconditions.checkNotNull(host, "k8s namespace cannot be null");
+        Preconditions.checkNotNull(ns, "k8s namespace cannot be null");
         this.namespace = ns;
         return this;
     }
