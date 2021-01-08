@@ -14,4 +14,6 @@ public enum DataCenter {
     ETCD,
 
     LOCAL,
+
+    K8S,
 }
