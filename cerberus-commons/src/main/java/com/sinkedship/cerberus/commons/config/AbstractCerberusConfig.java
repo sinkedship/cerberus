@@ -28,7 +28,7 @@ public abstract class AbstractCerberusConfig {
             case K8S:
                 dataCenterConfig = new K8sConfig();
             default:
-                throw new CerberusException("Invalid data center");
+                throw new CerberusException("Invalid data center: " + dataCenter);
         }
     }
 
