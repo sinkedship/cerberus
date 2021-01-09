@@ -9,7 +9,8 @@ public class K8sServiceMetaData extends ServiceMetaData {
     private final String servicePortName;
 
     public K8sServiceMetaData(String serviceName, String servicePortName) {
-        super("", "", "");
+        // Bypass precondition check in super constructor
+        super("organization", "category", "svc");
         this.serviceName = serviceName;
         this.servicePortName = servicePortName;
     }
