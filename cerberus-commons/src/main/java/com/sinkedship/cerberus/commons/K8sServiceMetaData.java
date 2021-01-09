@@ -15,6 +15,10 @@ public class K8sServiceMetaData extends ServiceMetaData {
         this.servicePortName = servicePortName;
     }
 
+    public K8sServiceMetaData(String serviceName) {
+        this(serviceName, "thrift-port");
+    }
+
     @Override
     public String getServiceIdentifier() {
         return serviceName;
