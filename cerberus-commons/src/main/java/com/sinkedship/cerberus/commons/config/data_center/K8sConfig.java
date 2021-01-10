@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import com.sinkedship.cerberus.commons.DataCenter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,7 +61,7 @@ public class K8sConfig extends DataCenterConfig {
         return verifySsl;
     }
 
-    public K8sConfig setAuthToken(String token)  {
+    public K8sConfig setAuthToken(String token) {
         Preconditions.checkNotNull(token, "k8s api server auth token cannot be null");
         this.authToken = token;
         return this;
