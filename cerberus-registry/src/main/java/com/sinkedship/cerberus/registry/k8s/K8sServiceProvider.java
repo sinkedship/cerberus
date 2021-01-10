@@ -40,40 +40,30 @@ public class K8sServiceProvider implements Provider {
     public Optional<Service> get(ServiceMetaData metaData) {
         try {
             K8sServiceMetaData k8sSvcMetaData = (K8sServiceMetaData) metaData;
-            V1ServiceList serviceList = coreV1Api.listNamespacedService(
-                    ns, null, null, null, null,
-                    null, null, null, null, null);
 
             Service svc = null;
-            for (V1Service v1Service : serviceList.getItems()) {
-                if (v1Service.getMetadata() == null ||
-                        v1Service.getMetadata().getName() == null ||
-                        !v1Service.getMetadata().getName().equalsIgnoreCase(
-                                k8sSvcMetaData.getServiceIdentifier())) {
-                    continue;
+            V1Service v1Service = coreV1Api.readNamespacedService(k8sSvcMetaData.getServiceIdentifier(), ns,
+                    null, null, null);
+            if (v1Service.getSpec() == null ||
+                    v1Service.getSpec().getPorts() == null ||
+                    v1Service.getSpec().getPorts().isEmpty()) {
+                return Optional.empty();
+            }
+            String ip = v1Service.getSpec().getClusterIP();
+            Integer port = null;
+            for (V1ServicePort v1ServicePort : v1Service.getSpec().getPorts()) {
+                if (v1ServicePort.getName() != null && v1ServicePort.getName().equalsIgnoreCase(
+                        k8sSvcMetaData.getServicePortName())) {
+                    port = v1ServicePort.getPort();
+                    break;
                 }
-                // Found the target service in k8s
-                if (v1Service.getSpec() == null ||
-                        v1Service.getSpec().getPorts() == null ||
-                        v1Service.getSpec().getPorts().isEmpty()) {
-                    continue;
-                }
-                String ip = v1Service.getSpec().getClusterIP();
-                Integer port = null;
-                for (V1ServicePort v1ServicePort : v1Service.getSpec().getPorts()) {
-                    if (v1ServicePort.getName() != null && v1ServicePort.getName().equalsIgnoreCase(
-                            k8sSvcMetaData.getServicePortName())) {
-                        port = v1ServicePort.getPort();
-                        break;
-                    }
-                }
-                if (port != null && StringUtils.isNotBlank(ip)) {
-                    svc = new CerberusService.Builder(Object.class)
-                            .metaData(k8sSvcMetaData).host(ip).port(port)
-                            .build();
-                    LOGGER.info("resolve k8s service with meta data:{}, ip:{}, port:{}",
-                            k8sSvcMetaData, ip, port);
-                }
+            }
+            if (port != null && StringUtils.isNotBlank(ip)) {
+                svc = new CerberusService.Builder(Object.class)
+                        .metaData(k8sSvcMetaData).host(ip).port(port)
+                        .build();
+                LOGGER.info("resolve k8s service with meta data:{}, ip:{}, port:{}",
+                        k8sSvcMetaData, ip, port);
             }
             return Optional.ofNullable(svc);
         } catch (ClassCastException e) {
