@@ -11,7 +11,6 @@ import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
-import io.kubernetes.client.openapi.models.V1ServiceList;
 import io.kubernetes.client.openapi.models.V1ServicePort;
 import io.kubernetes.client.util.Config;
 import org.apache.commons.lang3.StringUtils;
@@ -62,7 +61,7 @@ public class K8sServiceProvider implements Provider {
                 svc = new CerberusService.Builder(Object.class)
                         .metaData(k8sSvcMetaData).host(ip).port(port)
                         .build();
-                LOGGER.info("resolve k8s service with meta data:{}, ip:{}, port:{}",
+                LOGGER.debug("resolve k8s service with meta data:{}, ip:{}, port:{}",
                         k8sSvcMetaData, ip, port);
             }
             return Optional.ofNullable(svc);
