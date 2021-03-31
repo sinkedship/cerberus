@@ -71,7 +71,7 @@
         <curator.version>4.2.0</curator.version>
         <consul-api.version>1.4.2</consul-api.version>
         <jetcd.version>0.3.0</jetcd.version>
-        <guava.version>27.1-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
     </properties>
 
     <dependencyManagement>
