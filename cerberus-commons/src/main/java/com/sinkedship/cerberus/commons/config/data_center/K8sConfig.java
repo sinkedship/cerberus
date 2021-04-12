@@ -18,8 +18,11 @@ public class K8sConfig extends DataCenterConfig {
     private String namespace = "default";
     private String apiServerHost = DEFAULT_API_SERVER_HOST;
     private int apiServerPort = StringUtils.isBlank(DEFAULT_API_SERVER_PORT) ? 443 : Integer.parseInt(DEFAULT_API_SERVER_PORT);
-    private boolean verifySsl = true;
+    private boolean verifySsl = false;
     private String authToken;
+
+    private boolean debugWithNodePort = false;
+    private String debugNodeHost = "";
 
     public K8sConfig() {
         super(DataCenter.K8S);
@@ -78,5 +81,24 @@ public class K8sConfig extends DataCenterConfig {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+    public K8sConfig setDebugWithNodePort(boolean debugWithNodePort) {
+        this.debugWithNodePort = debugWithNodePort;
+        return this;
+    }
+
+    public boolean debugWithNodePort() {
+        return debugWithNodePort;
+    }
+
+    public K8sConfig setDebugNodeHost(String host) {
+        Preconditions.checkNotNull(host, "k8s debug node host cannot be null");
+        this.debugNodeHost = host;
+        return this;
+    }
+
+    public String getDebugNodeHost() {
+        return debugNodeHost;
     }
 }

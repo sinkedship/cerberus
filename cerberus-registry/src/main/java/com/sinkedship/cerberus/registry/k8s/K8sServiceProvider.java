@@ -28,8 +28,13 @@ public class K8sServiceProvider implements Provider {
 
     private final String ns;
 
+    private boolean debugWithNodePort;
+    private String debugNodeHost = "";
+
     public K8sServiceProvider(K8sConfig config) {
         this.ns = config.getNamespace();
+        this.debugWithNodePort = config.debugWithNodePort();
+        this.debugNodeHost = config.getDebugNodeHost();
         ApiClient apiClient = Config.fromToken(config.getBasePath(), config.getAuthToken(), config.verifySsl());
         Configuration.setDefaultApiClient(apiClient);
         coreV1Api = new CoreV1Api();
@@ -48,23 +53,45 @@ public class K8sServiceProvider implements Provider {
                     v1Service.getSpec().getPorts().isEmpty()) {
                 return Optional.empty();
             }
-            String ip = v1Service.getSpec().getClusterIP();
-            Integer port = null;
-            for (V1ServicePort v1ServicePort : v1Service.getSpec().getPorts()) {
-                if (v1ServicePort.getName() != null && v1ServicePort.getName().equalsIgnoreCase(
-                        k8sSvcMetaData.getServicePortName())) {
-                    port = v1ServicePort.getPort();
-                    break;
+
+            // If debugWithNodePort flag set to true, parse svc with node-port
+            if (debugWithNodePort) {
+                Integer nodePort = null;
+                for (V1ServicePort v1ServicePort : v1Service.getSpec().getPorts()) {
+                    if (v1ServicePort.getName() != null && v1ServicePort.getName().equalsIgnoreCase(
+                            k8sSvcMetaData.getServicePortName())) {
+                        nodePort = v1ServicePort.getNodePort();
+                        break;
+                    }
                 }
+                if (nodePort != null && StringUtils.isNotBlank(debugNodeHost)) {
+                    svc = new CerberusService.Builder(Object.class)
+                            .metaData(k8sSvcMetaData).host(debugNodeHost).port(nodePort)
+                            .build();
+                    LOGGER.debug("resolve k8s service using node-port debug with meta data:{}, node-host:{}, node-port:{}",
+                            k8sSvcMetaData, debugNodeHost, nodePort);
+                }
+                return Optional.ofNullable(svc);
+            } else {
+                // Normal resolving case
+                String ip = v1Service.getSpec().getClusterIP();
+                Integer port = null;
+                for (V1ServicePort v1ServicePort : v1Service.getSpec().getPorts()) {
+                    if (v1ServicePort.getName() != null && v1ServicePort.getName().equalsIgnoreCase(
+                            k8sSvcMetaData.getServicePortName())) {
+                        port = v1ServicePort.getPort();
+                        break;
+                    }
+                }
+                if (port != null && StringUtils.isNotBlank(ip)) {
+                    svc = new CerberusService.Builder(Object.class)
+                            .metaData(k8sSvcMetaData).host(ip).port(port)
+                            .build();
+                    LOGGER.debug("resolve k8s service with meta data:{}, ip:{}, port:{}",
+                            k8sSvcMetaData, ip, port);
+                }
+                return Optional.ofNullable(svc);
             }
-            if (port != null && StringUtils.isNotBlank(ip)) {
-                svc = new CerberusService.Builder(Object.class)
-                        .metaData(k8sSvcMetaData).host(ip).port(port)
-                        .build();
-                LOGGER.debug("resolve k8s service with meta data:{}, ip:{}, port:{}",
-                        k8sSvcMetaData, ip, port);
-            }
-            return Optional.ofNullable(svc);
         } catch (ClassCastException e) {
             LOGGER.warn("Cannot cast service metadata {} to k8s metadata", metaData);
         } catch (ApiException e) {
