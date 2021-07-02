@@ -19,6 +19,8 @@ public class CerberusServerBootConfig {
 
     private DriftNettyServerConfig driftServerConfig;
 
+    private int logicTreadCount = 100;
+
     public CerberusServerBootConfig() {
         driftServerConfig = new DriftNettyServerConfig();
         this.setPort(HostAndPortUtils.getAvailablePort());
@@ -173,4 +175,11 @@ public class CerberusServerBootConfig {
         return driftServerConfig;
     }
 
+    public int getLogicTreadCount() {
+        return logicTreadCount;
+    }
+
+    public void setLogicTreadCount(int logicTreadCount) {
+        this.logicTreadCount = logicTreadCount;
+    }
 }
