@@ -63,7 +63,7 @@ public class CerberusNettyServerTransport implements ServerTransport {
 
         workerGroup = new NioEventLoopGroup(configAdapter.getWorkerThreadCount(), threadsNamed("drift-server-worker-%s"));
 
-        logicExeGroup = new DefaultEventExecutorGroup(configAdapter.getLogicTreadCount());
+        logicExeGroup = new DefaultEventExecutorGroup(configAdapter.getLogicThreadCount());
 
         Optional<Supplier<SslContext>> sslContext = Optional.empty();
         if (config.isSslEnabled()) {
