@@ -19,7 +19,7 @@ public class CerberusServerBootConfig {
 
     private DriftNettyServerConfig driftServerConfig;
 
-    private int logicThreadCount = 100;
+    private int logicThreadCount = 200;
 
     public CerberusServerBootConfig() {
         driftServerConfig = new DriftNettyServerConfig();
