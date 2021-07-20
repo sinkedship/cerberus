@@ -13,10 +13,11 @@ import io.airlift.drift.client.DriftClient;
 import io.airlift.drift.client.ExceptionClassifier;
 import io.airlift.drift.client.RetryPolicy;
 import io.airlift.drift.client.address.AddressSelector;
+import io.airlift.drift.client.stats.JmxMethodInvocationStatsFactory;
 import io.airlift.drift.client.stats.MethodInvocationStat;
 import io.airlift.drift.client.stats.MethodInvocationStatsFactory;
 import io.airlift.drift.client.stats.NullMethodInvocationStat;
-import io.airlift.drift.client.stats.NullMethodInvocationStatsFactory;
+
 import io.airlift.drift.codec.ThriftCodecManager;
 import io.airlift.drift.codec.metadata.ThriftMethodMetadata;
 import io.airlift.drift.codec.metadata.ThriftServiceMetadata;
@@ -26,7 +27,9 @@ import io.airlift.drift.transport.client.DriftClientConfig;
 import io.airlift.drift.transport.client.MethodInvoker;
 import io.airlift.drift.transport.client.MethodInvokerFactory;
 import io.airlift.drift.transport.netty.client.DriftNettyMethodInvokerFactory;
+import org.weakref.jmx.MBeanExporter;
 
+import java.lang.management.ManagementFactory;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Optional;
@@ -61,7 +64,8 @@ public final class CerberusServiceFactory {
     public CerberusServiceFactory(CerberusClientConfig config) {
         this(config, DriftNettyMethodInvokerFactory.createStaticDriftNettyMethodInvokerFactory(
                 config.getDriftNettyClientConfig()),
-                new NullMethodInvocationStatsFactory());
+                new JmxMethodInvocationStatsFactory(new MBeanExporter(
+                        ManagementFactory.getPlatformMBeanServer())));
     }
 
     public CerberusServiceFactory(CerberusClientConfig config,
@@ -72,7 +76,8 @@ public final class CerberusServiceFactory {
     }
 
     public CerberusServiceFactory(CerberusClientConfig config, MethodInvokerFactory<?> methodInvokerFactory) {
-        this(config, methodInvokerFactory, new NullMethodInvocationStatsFactory());
+        this(config, methodInvokerFactory, new JmxMethodInvocationStatsFactory(new MBeanExporter(
+                ManagementFactory.getPlatformMBeanServer())));
     }
 
     public CerberusServiceFactory(CerberusClientConfig config,
