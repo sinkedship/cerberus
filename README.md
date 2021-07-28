@@ -54,23 +54,6 @@ First of all, you do not need to share the contracts (like IDL in Apache Thrift)
 
 And what's more important is that you can just use Java Annotation to define Thrift types and/or services instead of writing IDL files.
 
-#### Add dependencies to use Drift
-
-```maven
-<dependencies>
-    <dependency>
-        <groupId>io.airlift.drift</groupId>
-        <artifactId>drift-api</artifactId>
-        <version>1.18</version>
-    </dependency>
-    <dependency>
-        <groupId>com.google.guava</groupId>
-        <artifactId>guava</artifactId>
-        <version>27.1-jre</version>
-    </dependency>
-</dependencies>
-```
-
 #### Define an interface that ***WILL BE SHARED*** between server and client.
 
 ```java
