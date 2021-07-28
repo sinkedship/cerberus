@@ -1,5 +1,8 @@
 package com.sinkedship.cerberus.bootstrap;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.sinkedship.cerberus.bootstrap.config.CerberusServerBootConfig;
 import com.sinkedship.cerberus.bootstrap.config.CerberusServerConfig;
 import com.sinkedship.cerberus.bootstrap.netty.transport.CerberusNettyServerTransportFactory;
@@ -12,18 +15,17 @@ import com.sinkedship.cerberus.core.api.Registrar;
 import com.sinkedship.cerberus.core.api.Registry;
 import com.sinkedship.cerberus.core.api.RegistryFactory;
 import com.sinkedship.cerberus.registry.DefaultRegistryFactory;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
 import io.airlift.drift.annotations.ThriftService;
 import io.airlift.drift.codec.ThriftCodecManager;
 import io.airlift.drift.server.DriftServer;
 import io.airlift.drift.server.DriftService;
-import io.airlift.drift.server.stats.NullMethodInvocationStatsFactory;
+import io.airlift.drift.server.stats.JmxMethodInvocationStatsFactory;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.weakref.jmx.MBeanExporter;
 
+import java.lang.management.ManagementFactory;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -197,7 +199,7 @@ public class CerberusServerBootstrap {
         DriftServer server = new DriftServer(
                 new CerberusNettyServerTransportFactory(bootConfig),
                 new ThriftCodecManager(),
-                new NullMethodInvocationStatsFactory(),
+                new JmxMethodInvocationStatsFactory(new MBeanExporter(ManagementFactory.getPlatformMBeanServer())),
                 ImmutableSet.copyOf(services),
                 ImmutableSet.of()
         );

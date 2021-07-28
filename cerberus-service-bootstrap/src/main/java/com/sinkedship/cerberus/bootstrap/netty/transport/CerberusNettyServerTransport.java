@@ -13,6 +13,8 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.ssl.SslContext;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
+import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.Future;
 
 import java.net.InetSocketAddress;
@@ -40,6 +42,7 @@ public class CerberusNettyServerTransport implements ServerTransport {
 
     private final EventLoopGroup ioGroup;
     private final EventLoopGroup workerGroup;
+    private final EventExecutorGroup logicExeGroup;
 
     private Channel channel;
 
@@ -60,6 +63,8 @@ public class CerberusNettyServerTransport implements ServerTransport {
 
         workerGroup = new NioEventLoopGroup(configAdapter.getWorkerThreadCount(), threadsNamed("drift-server-worker-%s"));
 
+        logicExeGroup = new DefaultEventExecutorGroup(configAdapter.getLogicThreadCount());
+
         Optional<Supplier<SslContext>> sslContext = Optional.empty();
         if (config.isSslEnabled()) {
             SslContextFactory sslContextFactory = createSslContextFactory(false, config.getSslContextRefreshTime(), workerGroup);
@@ -76,14 +81,15 @@ public class CerberusNettyServerTransport implements ServerTransport {
             sslContext.get().get();
         }
 
-        ThriftServerInitializer serverInitializer = new ThriftServerInitializer(
+        CerberusThriftServerInitializer serverInitializer = new CerberusThriftServerInitializer(
                 methodInvoker,
                 config.getMaxFrameSize(),
                 config.getRequestTimeout(),
                 sslContext,
                 config.isAllowPlaintext(),
                 config.isAssumeClientsSupportOutOfOrderResponses(),
-                workerGroup);
+                logicExeGroup
+                );
 
         bootstrap = new ServerBootstrap()
                 .group(ioGroup, workerGroup)
@@ -120,6 +126,7 @@ public class CerberusNettyServerTransport implements ServerTransport {
             try {
                 ioShutdown = ioGroup.shutdownGracefully(0, 0, SECONDS);
             } finally {
+                await(logicExeGroup.shutdownGracefully(0, 0, SECONDS));
                 await(workerGroup.shutdownGracefully(0, 0, SECONDS));
             }
             await(ioShutdown);

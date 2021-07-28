@@ -7,6 +7,7 @@ import com.sinkedship.cerberus.core.api.Registry;
 import com.sinkedship.cerberus.core.api.RegistryFactory;
 import com.sinkedship.cerberus.registry.consul.ConsulRegistry;
 import com.sinkedship.cerberus.registry.etcd.EtcdRegistry;
+import com.sinkedship.cerberus.registry.k8s.K8sRegistry;
 import com.sinkedship.cerberus.registry.local.LocalRegistry;
 import com.sinkedship.cerberus.registry.zookeeper.ZookeeperRegistry;
 
@@ -27,6 +28,8 @@ public class DefaultRegistryFactory implements RegistryFactory {
                 return new ConsulRegistry((ConsulConfig) dataCenterConfig);
             case ETCD:
                 return new EtcdRegistry((EtcdConfig) dataCenterConfig);
+            case K8S:
+                return new K8sRegistry((K8sConfig) dataCenterConfig);
             case LOCAL:
                 return new LocalRegistry((LocalConfig) dataCenterConfig);
             default:

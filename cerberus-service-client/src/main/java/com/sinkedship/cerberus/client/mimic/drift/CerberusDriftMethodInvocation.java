@@ -150,7 +150,8 @@ public class CerberusDriftMethodInvocation<A extends Address> extends AbstractFu
             }
 
             Duration connectDelay = retryPolicy.getBackoffDelay(connectionFailuresCount);
-            LOGGER.debug("Failed connection to %s with attempt %s, will retry in %s", address.get(), connectionFailuresCount, connectDelay);
+            LOGGER.debug("Failed connection to %s with attempt %s, will retry in %s",
+                    address.get(), connectionFailuresCount, connectDelay);
             schedule(connectDelay, () -> invoke(address.get()));
         } catch (Throwable t) {
             // this should never happen, but ensure that invocation always finishes
@@ -215,15 +216,17 @@ public class CerberusDriftMethodInvocation<A extends Address> extends AbstractFu
             if (!exceptionClassification.isRetry().orElse(FALSE)) {
                 // always store exception if non-retryable, so it is added to the exception chain
                 lastException = throwable;
-                fail("Non-retryable exception");
+                fail(format("Non-retryable exception, rpc method: %s", metadata.getName()));
                 return;
             }
             if (invocationAttempts > retryPolicy.getMaxRetries()) {
-                fail(format("Max retry attempts (%s) exceeded", retryPolicy.getMaxRetries()));
+                fail(format("Max retry attempts (%s) exceeded, rpc method: %s",
+                        retryPolicy.getMaxRetries(), metadata.getName()));
                 return;
             }
             if (duration.compareTo(retryPolicy.getMaxRetryTime()) >= 0) {
-                fail(format("Max retry time (%s) exceeded", retryPolicy.getMaxRetryTime()));
+                fail(format("Max retry time (%s) exceeded, rpc method: %s",
+                        retryPolicy.getMaxRetryTime(), metadata.getName()));
                 return;
             }
 
