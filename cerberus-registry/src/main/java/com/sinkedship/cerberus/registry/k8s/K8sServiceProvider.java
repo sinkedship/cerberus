@@ -28,7 +28,7 @@ public class K8sServiceProvider implements Provider {
 
     private final String ns;
 
-    private boolean debugWithNodePort;
+    private final boolean debugWithNodePort;
     private String debugNodeHost = "";
 
     public K8sServiceProvider(K8sConfig config) {
