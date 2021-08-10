@@ -42,4 +42,9 @@ public class K8sServiceMetaData extends ServiceMetaData {
     public int hashCode() {
         return Objects.hash(this.serviceName, this.servicePortName);
     }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s", this.serviceName, servicePortName);
+    }
 }
