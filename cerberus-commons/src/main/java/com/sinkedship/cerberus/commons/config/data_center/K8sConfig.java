@@ -20,6 +20,7 @@ public class K8sConfig extends DataCenterConfig {
     private int apiServerPort = StringUtils.isBlank(DEFAULT_API_SERVER_PORT) ? 443 : Integer.parseInt(DEFAULT_API_SERVER_PORT);
     private boolean verifySsl = false;
     private String authToken;
+    private long svcRefreshInterval = 30 * 1000;
 
     private boolean debugWithNodePort = false;
     private String debugNodeHost = "";
@@ -100,5 +101,13 @@ public class K8sConfig extends DataCenterConfig {
 
     public String getDebugNodeHost() {
         return debugNodeHost;
+    }
+
+    public long getSvcRefreshInterval() {
+        return svcRefreshInterval;
+    }
+
+    public void setSvcRefreshInterval(long svcRefreshInterval) {
+        this.svcRefreshInterval = svcRefreshInterval;
     }
 }
