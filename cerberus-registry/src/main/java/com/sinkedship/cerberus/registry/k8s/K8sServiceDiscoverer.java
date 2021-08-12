@@ -87,6 +87,7 @@ class K8sServiceDiscoverer {
         Configuration.setDefaultApiClient(apiClient);
         coreV1Api = new CoreV1Api();
         cache = CacheBuilder.newBuilder()
+                .maximumSize(config.getSvcCacheSize())
                 .refreshAfterWrite(config.getSvcRefreshInterval(), TimeUnit.MILLISECONDS)
                 .build(new InternalCacheLoader(this));
     }
