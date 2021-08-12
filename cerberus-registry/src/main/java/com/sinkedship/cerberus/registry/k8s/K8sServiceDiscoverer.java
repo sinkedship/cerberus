@@ -50,6 +50,7 @@ class K8sServiceDiscoverer {
 
         @Override
         public Optional<Service> load(K8sServiceMetaData metaData) {
+            LOGGER.debug("try to load k8s service by meta-data:{}", metaData);
             try {
                 return discoverer.resolveK8sService(metaData);
             } catch (ApiException e) {
