@@ -8,14 +8,20 @@ import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.sinkedship.cerberus.commons.K8sServiceMetaData;
 import com.sinkedship.cerberus.commons.config.data_center.K8sConfig;
+import com.sinkedship.cerberus.commons.exception.CerberusException;
 import com.sinkedship.cerberus.core.CerberusService;
 import com.sinkedship.cerberus.core.Service;
+import io.kubernetes.client.informer.ResourceEventHandler;
+import io.kubernetes.client.informer.SharedIndexInformer;
+import io.kubernetes.client.informer.SharedInformerFactory;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
+import io.kubernetes.client.openapi.models.V1ServiceList;
 import io.kubernetes.client.openapi.models.V1ServicePort;
+import io.kubernetes.client.util.CallGeneratorParams;
 import io.kubernetes.client.util.Config;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -36,9 +42,9 @@ class K8sServiceDiscoverer {
 
     private final String debugNodeHost;
 
-    private final LoadingCache<K8sServiceMetaData, Optional<Service>> cache;
+    private final LoadingCache<K8sServiceMetaData, Service> cache;
 
-    private static final class InternalCacheLoader extends CacheLoader<K8sServiceMetaData, Optional<Service>> {
+    private static final class InternalCacheLoader extends CacheLoader<K8sServiceMetaData, Service> {
 
         final K8sServiceDiscoverer discoverer;
         final ListeningExecutorService executor = MoreExecutors.listeningDecorator(
@@ -49,18 +55,14 @@ class K8sServiceDiscoverer {
         }
 
         @Override
-        public Optional<Service> load(K8sServiceMetaData metaData) {
+        public Service load(K8sServiceMetaData metaData) throws Exception {
             LOGGER.debug("try to load k8s service by meta-data:{}", metaData);
-            try {
-                return discoverer.resolveK8sService(metaData);
-            } catch (ApiException e) {
-                LOGGER.warn("Cannot list service from k8s", e);
-                return Optional.empty();
-            }
+            Optional<Service> svc = discoverer.resolveK8sService(metaData);
+            return svc.orElseThrow(() -> new CerberusException("unable to resolve k8s svc"));
         }
 
         @Override
-        public ListenableFuture<Optional<Service>> reload(K8sServiceMetaData metaData, Optional<Service> oldService) {
+        public ListenableFuture<Service> reload(K8sServiceMetaData metaData, Service oldService) {
             checkNotNull(metaData);
             checkNotNull(oldService);
             return executor.submit(() -> {
@@ -68,10 +70,11 @@ class K8sServiceDiscoverer {
                     Optional<Service> service = discoverer.resolveK8sService(metaData);
                     if (service.isPresent()) {
                         LOGGER.debug("reload service by meta-data:{}, reloaded svc:{}", metaData, service.get());
+                        return service.get();
                     } else {
                         LOGGER.warn("reload service by meta-data:{}, returning empty svc", metaData);
+                        return oldService;
                     }
-                    return service;
                 } catch (Exception e) {
                     LOGGER.warn("cache reload with error, returning old service, k8s svc meta-data:{}", metaData);
                     return oldService;
@@ -90,6 +93,68 @@ class K8sServiceDiscoverer {
                 .maximumSize(config.getSvcCacheSize())
                 .refreshAfterWrite(config.getSvcRefreshInterval(), TimeUnit.MILLISECONDS)
                 .build(new InternalCacheLoader(this));
+        if (config.isSvcWatch()) {
+            watchSvc(config);
+        }
+    }
+
+    private void watchSvc(K8sConfig config) {
+        ApiClient apiClient = Config.fromToken(config.getBasePath(), config.getAuthToken(), config.verifySsl())
+                .setReadTimeout(0);
+        CoreV1Api api = new CoreV1Api(apiClient);
+        SharedInformerFactory factory = new SharedInformerFactory(apiClient);
+        SharedIndexInformer<V1Service> svcInformer = factory.sharedIndexInformerFor(
+                (CallGeneratorParams params) -> api.listNamespacedServiceCall(config.getNamespace(),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        params.resourceVersion,
+                        params.timeoutSeconds,
+                        params.watch,
+                        null
+                ),
+                V1Service.class,
+                V1ServiceList.class
+        );
+        svcInformer.addEventHandler(new ResourceEventHandler<V1Service>() {
+            @Override
+            public void onAdd(V1Service service) {
+                if (service.getMetadata() != null && service.getSpec() != null &&
+                        service.getSpec().getPorts() != null) {
+                    String ip = service.getSpec().getClusterIP();
+                    for (V1ServicePort port : service.getSpec().getPorts()) {
+                        String svcName = service.getMetadata().getName();
+                        String portName = port.getName();
+                        K8sServiceMetaData metaData = new K8sServiceMetaData(svcName, portName);
+                        // TODO(dguan) cache all the services?
+                        cache.put(metaData, new CerberusService.Builder(Object.class)
+                                .metaData(metaData).host(ip).port(port.getPort())
+                                .build());
+                    }
+                }
+            }
+
+            @Override
+            public void onUpdate(V1Service oldObj, V1Service newObj) {
+            }
+
+            @Override
+            public void onDelete(V1Service service, boolean deletedFinalStateUnknown) {
+                if (service.getMetadata() != null && service.getSpec() != null &&
+                        service.getSpec().getPorts() != null) {
+                    for (V1ServicePort port : service.getSpec().getPorts()) {
+                        String svcName = service.getMetadata().getName();
+                        String portName = port.getName();
+                        K8sServiceMetaData metaData = new K8sServiceMetaData(svcName, portName);
+                        cache.invalidate(metaData);
+                    }
+                }
+            }
+        });
+        factory.startAllRegisteredInformers();
     }
 
     private Optional<Service> resolveK8sService(K8sServiceMetaData metaData) throws ApiException {
@@ -123,7 +188,7 @@ class K8sServiceDiscoverer {
 
     Optional<Service> findK8sService(K8sServiceMetaData metaData) {
         try {
-            return cache.get(metaData);
+            return Optional.ofNullable(cache.get(metaData));
         } catch (Throwable t) {
             LOGGER.warn("resolve K8S service by meta data:{} with error", metaData, t);
             return Optional.empty();

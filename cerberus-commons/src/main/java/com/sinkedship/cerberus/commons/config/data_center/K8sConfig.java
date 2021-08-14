@@ -22,6 +22,7 @@ public class K8sConfig extends DataCenterConfig {
     private String authToken;
     private long svcRefreshInterval = 30 * 1000;
     private int svcCacheSize = 100;
+    private boolean svcWatch = false;
 
     private boolean debugWithNodePort = false;
     private String debugNodeHost = "";
@@ -118,5 +119,13 @@ public class K8sConfig extends DataCenterConfig {
 
     public void setSvcCacheSize(int svcCacheSize) {
         this.svcCacheSize = svcCacheSize;
+    }
+
+    public boolean isSvcWatch() {
+        return svcWatch;
+    }
+
+    public void setSvcWatch(boolean svcWatch) {
+        this.svcWatch = svcWatch;
     }
 }
