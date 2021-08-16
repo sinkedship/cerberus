@@ -150,7 +150,7 @@ public class CerberusDriftMethodInvocation<A extends Address> extends AbstractFu
             }
 
             Duration connectDelay = retryPolicy.getBackoffDelay(connectionFailuresCount);
-            LOGGER.debug("Failed connection to %s with attempt %s, will retry in %s",
+            LOGGER.debug("Failed connection to {} with attempt {}, will retry in {}",
                     address.get(), connectionFailuresCount, connectDelay);
             schedule(connectDelay, () -> invoke(address.get()));
         } catch (Throwable t) {
@@ -240,7 +240,7 @@ public class CerberusDriftMethodInvocation<A extends Address> extends AbstractFu
 
             // backoff before next invocation
             Duration backoffDelay = retryPolicy.getBackoffDelay(invocationAttempts);
-            LOGGER.debug("Failed invocation of %s with attempt %s, will retry in %s (overloadedRejects: %s). Exception: %s",
+            LOGGER.debug("Failed invocation of {} with attempt {}, will retry in {} (overloadedRejects: {}). Exception: {}",
                     metadata.getName(),
                     invocationAttempts,
                     backoffDelay,
