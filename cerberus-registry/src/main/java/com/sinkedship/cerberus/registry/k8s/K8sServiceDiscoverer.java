@@ -138,7 +138,20 @@ class K8sServiceDiscoverer {
             }
 
             @Override
-            public void onUpdate(V1Service oldObj, V1Service newObj) {
+            public void onUpdate(V1Service oldSvc, V1Service newSvc) {
+                if (newSvc.getMetadata() != null && newSvc.getSpec() != null &&
+                        newSvc.getSpec().getPorts() != null) {
+                    String svcName = newSvc.getMetadata().getName();
+                    String ip = newSvc.getSpec().getClusterIP();
+                    for (V1ServicePort port : newSvc.getSpec().getPorts()) {
+                        String portName = port.getName();
+                        K8sServiceMetaData metaData = new K8sServiceMetaData(svcName, portName);
+                        cache.put(metaData, new CerberusService.Builder(Object.class)
+                                .metaData(metaData).host(ip).port(port.getPort())
+                                .build());
+                        LOGGER.debug("update svc, meta-data:{} with ip:{}, port:{}", metaData, ip, port.getPort());
+                    }
+                }
             }
 
             @Override
