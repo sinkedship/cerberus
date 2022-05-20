@@ -70,7 +70,7 @@
         <apache.log4j2.version>2.13.3</apache.log4j2.version>
         <apache.commons-lang3.version>3.8.1</apache.commons-lang3.version>
 
-        <gson.version>2.8.5</gson.version>
+        <gson.version>2.8.9</gson.version>
         <drift.version>1.18</drift.version>
         <curator.version>4.2.0</curator.version>
         <consul-api.version>1.4.2</consul-api.version>
